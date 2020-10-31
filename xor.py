@@ -3,8 +3,7 @@
 
 import numpy as np
 
-from simplenn.layers import Linear, Activation, tanh, tanh_prime
-from simplenn.opti import sgd, tse
+from simplenn import linear, activation, tanh, tanh_prime, sgd, tse, train
 
 
 if __name__ == "__main__":
@@ -12,12 +11,13 @@ if __name__ == "__main__":
     targets = np.array([[1, 0], [0, 1], [0, 1], [1, 0]])
     # XOR can't be learned with a simple linear model. Comment out the
     # Tanh and second Linear layer to see for yourself.
-    net = (
-        Linear(input_size=2, output_size=2)
-        >> Activation(tanh, tanh_prime)
-        >> Linear(input_size=2, output_size=2)
-    )
-    net.train(
+    net = [
+        linear(input_size=2, output_size=2),
+        activation(tanh, tanh_prime),
+        linear(input_size=2, output_size=2),
+    ]
+    predict = train(
+        net,
         loss=tse,
         optimizer=sgd(),
         inputs=inputs,
@@ -26,5 +26,5 @@ if __name__ == "__main__":
     )
     print("x, predicted, y")
     for x, y in zip(inputs, targets):
-        predicted = net.forward(x)
+        predicted = predict(x)
         print(x, predicted, y)

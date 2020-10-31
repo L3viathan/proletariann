@@ -3,8 +3,7 @@
 
 import numpy as np
 
-from simplenn.layers import Linear, Activation, tanh, tanh_prime
-from simplenn.opti import sgd, tse
+from simplenn import linear, activation, tanh, tanh_prime, sgd, tse, train
 
 
 def fizz_buzz_encode(x):
@@ -27,12 +26,9 @@ def binary_encode(x):
 if __name__ == "__main__":
     inputs = np.array([binary_encode(x) for x in range(101, 1024)])
     targets = np.array([fizz_buzz_encode(x) for x in range(101, 1024)])
-    net = (
-        Linear(input_size=10, output_size=50)
-        >> Activation(tanh, tanh_prime)
-        >> Linear(input_size=50, output_size=4)
-    )
-    net.train(
+    net = [linear(input_size=10, output_size=50), activation(tanh, tanh_prime), linear(input_size=50, output_size=4)]
+    predict = train(
+        net,
         loss=tse,
         optimizer=sgd(lr=0.001),
         inputs=inputs,
@@ -41,7 +37,7 @@ if __name__ == "__main__":
     )
     print("here's what's wrong: x, predicted, actual:")
     for x in range(1, 101):
-        predicted = net.forward(binary_encode(x))
+        predicted = predict(binary_encode(x))
         predicted_idx = np.argmax(predicted)
         actual_idx = np.argmax(fizz_buzz_encode(x))
         labels = [str(x), "fizz", "buzz", "fizzbuzz"]
