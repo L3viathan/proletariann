@@ -4,14 +4,11 @@
 import numpy as np
 
 from simplenn.layers import Linear, Activation, tanh, tanh_prime
-from simplenn.nn import NeuralNet
 from simplenn.opti import sgd, tse
-from simplenn.train import train
 
 
 def fizz_buzz_encode(x):
-    """ four classes number, "fizz", "buzz", "fizzbuzz".
-    """
+    """four classes number, "fizz", "buzz", "fizzbuzz"."""
     if x % 15 == 0:
         return [0, 0, 0, 1]
     elif x % 5 == 0:
@@ -23,29 +20,24 @@ def fizz_buzz_encode(x):
 
 
 def binary_encode(x):
-    """ 10 digit binary encoding of x.
-    """
+    """10 digit binary encoding of x."""
     return [x >> i & 1 for i in range(10)]
 
 
 if __name__ == "__main__":
-    inputs = np.array([
-        binary_encode(x)
-        for x in range(101, 1024)
-    ])
-    targets = np.array([
-        fizz_buzz_encode(x)
-        for x in range(101, 1024)
-    ])
-    net = NeuralNet([
-        Linear(input_size=10, output_size=50),
-        Activation(tanh, tanh_prime),
-        Linear(input_size=50, output_size=4)
-    ])
-    train(
-        net, loss=tse, optimizer=sgd(lr=0.001),
-        inputs=inputs, targets=targets,
-        n_epochs=5000
+    inputs = np.array([binary_encode(x) for x in range(101, 1024)])
+    targets = np.array([fizz_buzz_encode(x) for x in range(101, 1024)])
+    net = (
+        Linear(input_size=10, output_size=50)
+        >> Activation(tanh, tanh_prime)
+        >> Linear(input_size=50, output_size=4)
+    )
+    net.train(
+        loss=tse,
+        optimizer=sgd(lr=0.001),
+        inputs=inputs,
+        targets=targets,
+        n_epochs=5000,
     )
     print("here's what's wrong: x, predicted, actual:")
     for x in range(1, 101):
