@@ -1,7 +1,7 @@
 # Simple Neural Network
 
-Somewhat refactored and simplified version of Joel Grus' awesome live coding
-madness:
+Somewhat functionalized version of @digitalarbeiter's somewhat refactored and
+simplified version of Joel Grus' awesome live coding madness:
 
 https://www.youtube.com/watch?v=o64FV-ez6Gw
 
