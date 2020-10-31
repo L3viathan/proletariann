@@ -3,7 +3,7 @@
 
 import numpy as np
 
-from proletariann import linear, activation, tanh, tanh_prime, sgd, tse, train
+from proletariann import linear, activation, tanh, tanh_prime, sgd, tse, make_model
 
 
 def fizz_buzz_encode(x):
@@ -26,9 +26,12 @@ def binary_encode(x):
 if __name__ == "__main__":
     inputs = np.array([binary_encode(x) for x in range(101, 1024)])
     targets = np.array([fizz_buzz_encode(x) for x in range(101, 1024)])
-    net = [linear(input_size=10, output_size=50), activation(tanh, tanh_prime), linear(input_size=50, output_size=4)]
+    train = make_model(
+        linear(input_size=10, output_size=50),
+        activation(tanh, tanh_prime),
+        linear(input_size=50, output_size=4),
+    )
     predict = train(
-        net,
         loss=tse,
         optimizer=sgd(lr=0.001),
         inputs=inputs,

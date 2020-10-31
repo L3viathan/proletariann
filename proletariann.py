@@ -15,28 +15,33 @@ def batch(inputs, targets, batch_size=32, shuffle=True):
         yield batch_inputs, batch_targets
 
 
-def train(net, loss, optimizer, inputs, targets, n_epochs=5000):
-    """Train the neural net with the given inputs/targets, using the
-    given loss function and optimizer, over n_epochs.
-    """
-    def predict(data):
-        for forward, _, __ in net:
-            data = forward(data)
-        return data
+def make_model(*net):
+    net = list(net)
 
-    for epoch in range(n_epochs):
-        epoch_loss = 0.0
-        for batch_inputs, batch_targets in batch(inputs, targets):
-            batch_predicted = predict(batch_inputs)
-            batch_loss, grad = loss(batch_predicted, batch_targets)
-            epoch_loss += batch_loss
-            for _, __, backward in reversed(net):
-                grad = backward(grad)
-            for _, params_and_grads, __ in net:
-                optimizer(params_and_grads())
-        print(epoch, epoch_loss)
-    return predict
+    def train(loss, optimizer, inputs, targets, n_epochs=5000):
+        """Train the neural net with the given inputs/targets, using the
+        given loss function and optimizer, over n_epochs.
+        """
 
+        def predict(data):
+            for forward, _, __ in net:
+                data = forward(data)
+            return data
+
+        for epoch in range(n_epochs):
+            epoch_loss = 0.0
+            for batch_inputs, batch_targets in batch(inputs, targets):
+                batch_predicted = predict(batch_inputs)
+                batch_loss, grad = loss(batch_predicted, batch_targets)
+                epoch_loss += batch_loss
+                for _, __, backward in reversed(net):
+                    grad = backward(grad)
+                for _, params_and_grads, __ in net:
+                    optimizer(params_and_grads())
+            print(epoch, epoch_loss)
+        return predict
+
+    return train
 
 
 def params_and_grads(data):
@@ -44,6 +49,7 @@ def params_and_grads(data):
         for name, param in data["params"].items():
             grad = data["grads"][name]
             yield param, grad
+
     return params_and_grads
 
 
