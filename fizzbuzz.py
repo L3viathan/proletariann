@@ -3,7 +3,7 @@
 
 import numpy as np
 
-from simplenn import linear, activation, tanh, tanh_prime, sgd, tse, train
+from proletariann import linear, activation, tanh, tanh_prime, sgd, tse, train
 
 
 def fizz_buzz_encode(x):
